@@ -15,22 +15,14 @@ Sample code:
     	log.Fatalf("LDAP auth error %s\n", err.Error())
     }
     defer client.Close()
-        search := '(cn=*example*)'
+    search := '(cn=*example*)'
     attributes := []string{"sn"} // if empty all attributes are fetched -> !performance 
-    // check "github.com/go-ldap/ldap/v3"
-    searchRequest := ldap.NewSearchRequest(
-        'o=Things',
-        ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
-        search,
-        attributes,
-        nil,
-    )
-    searchResult, err := client.Conn.Search(searchRequest)
+    searchResult, err := client.Search("o=Things", search, attributes)
     if err != nil {
         log.Fatalf("Search error %s\n", err.Error())
     }
     for _, entry := range searchResult.Entries {
-        fmt.Println(entry.DN)
+        client.Replace(entry.DN, "sn", []string{"replaced by this"})
     }
     return
 ```

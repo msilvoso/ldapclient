@@ -99,3 +99,9 @@ func (lc *LDAPClient) Search(base, search string, attributes []string) (*ldap.Se
 	)
 	return lc.Conn.Search(searchRequest)
 }
+
+func (lc *LDAPClient) Replace(dn string, attribute string, values []string) error {
+	modifyRequest := ldap.NewModifyRequest(dn, nil)
+	modifyRequest.Replace(attribute, values)
+	return lc.Conn.Modify(modifyRequest)
+}
