@@ -88,3 +88,14 @@ func (lc *LDAPClient) Authenticate() (err error) {
 	err = lc.Conn.Bind(lc.BindDN, lc.BindPassword)
 	return
 }
+
+func (lc *LDAPClient) Search(base, search string, attributes []string) (*ldap.SearchResult, error) {
+	searchRequest := ldap.NewSearchRequest(
+		base,
+		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
+		search,
+		attributes, // if empty fetches all attributes
+		nil,
+	)
+	return lc.Conn.Search(searchRequest)
+}
