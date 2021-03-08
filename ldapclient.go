@@ -100,6 +100,18 @@ func (lc *LDAPClient) Search(base, search string, attributes []string) (*ldap.Se
 	return lc.Conn.Search(searchRequest)
 }
 
+// SearchScoped limits the search to a scope see ldap package ScopeMap
+func (lc *LDAPClient) SearchScoped(base, search string, attributes []string, scope int) (*ldap.SearchResult, error) {
+	searchRequest := ldap.NewSearchRequest(
+		base,
+		scope, ldap.NeverDerefAliases, 0, 0, false,
+		search,
+		attributes, // if empty fetches all attributes
+		nil,
+	)
+	return lc.Conn.Search(searchRequest)
+}
+
 func (lc *LDAPClient) Replace(dn string, attribute string, values []string) error {
 	modifyRequest := ldap.NewModifyRequest(dn, nil)
 	modifyRequest.Replace(attribute, values)
