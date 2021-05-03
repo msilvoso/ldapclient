@@ -2,6 +2,7 @@ package ldapclient
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"github.com/go-ldap/ldap/v3"
 )
@@ -17,6 +18,7 @@ type LDAPClient struct {
 	UseTLS             bool
 	StartTLS           bool
 	ClientCertificates []tls.Certificate // Adding client certificates
+	RootCAs            *x509.CertPool
 }
 
 func NewLDAPClient(host string, port int, dn, password string) LDAPClient {
@@ -63,8 +65,13 @@ func (lc *LDAPClient) Connect() (err error) {
 		InsecureSkipVerify: lc.InsecureSkipVerify,
 		ServerName:         lc.ServerName,
 	}
+	// client certs
 	if len(lc.ClientCertificates) > 0 {
 		config.Certificates = lc.ClientCertificates
+	}
+	// server certificates
+	if lc.RootCAs != nil {
+		config.RootCAs = lc.RootCAs
 	}
 	lc.Conn, err = ldap.DialTLS("tcp", address, config)
 	return
